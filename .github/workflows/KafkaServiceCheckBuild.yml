@@ -21,6 +21,6 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore KafkaService/KafkaService.sln
+      run: dotnet restore KafkaService.sln
     - name: Build
-      run: dotnet build KafkaService/KafkaService.sln --no-restore
+      run: dotnet build KafkaService.sln --no-restore
