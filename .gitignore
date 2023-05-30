@@ -2,3 +2,7 @@
 *.vs
 *bin
 *obj
+
+
+#HelpFiles
+LaunchHelp.txt
