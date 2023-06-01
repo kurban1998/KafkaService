@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ServicePublisher.Registars
 {
-    internal static class ProducerRegistar
+    internal static class ProducerRegister
     {
         public static void AddProducer(this IServiceCollection services, IConfiguration configuration)
         {

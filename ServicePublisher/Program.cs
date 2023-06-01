@@ -1,4 +1,4 @@
-﻿using Confluent.Kafka;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +21,7 @@ namespace KafkaSender
                 })
                 .ConfigureServices((context, services) =>
                 {
+                    services.AddDbPsql(context.Configuration);
                     services.AddProducer(context.Configuration);
                     services.AddSingleton<PublishWorker>();
                 });
