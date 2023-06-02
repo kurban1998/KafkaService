@@ -4,6 +4,7 @@ using DataAccess.Models;
 
 using Confluent.Kafka;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace ServicePublisher
 {
@@ -11,22 +12,35 @@ namespace ServicePublisher
     {
         public PublishWorker(
             IProducer<string, string> producer,
-            MyDbContext context)
+            MyDbContext context,
+            ILogger<PublishWorker> logger)
         {
             _producer = producer;
             _context = context;
+            _logger = logger;
         }
 
         public async Task Run(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                // TODO: добавить логирование
-                if (!_context.Accounts.Any()) return;
+                if (!_context.Accounts.Any()) 
+                {
+                    _logger.LogInformation("No items in the database");
+                    return;
+                }
 
                 foreach (var account in _context.Accounts.ToList())
                 {
-                    await _producer.ProduceAsync(KafkaTopicNames.TopicName, CreateMessage(account), cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        await _producer.ProduceAsync(KafkaTopicNames.TopicName, CreateMessage(account), cancellationToken).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        _logger.LogError($"There was an error while sending: {account.Id}");
+                    }
+                    
                     await Task.Delay(WaitTimeWorker.WaitTime);
                 }
             }
@@ -45,5 +59,6 @@ namespace ServicePublisher
 
         private readonly MyDbContext _context;
         private readonly IProducer<string, string> _producer;
+        private readonly ILogger<PublishWorker> _logger;
     }
 }
