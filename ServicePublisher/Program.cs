@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using ServicePublisher;
 using ServicePublisher.Registars;
 
@@ -21,6 +22,11 @@ namespace KafkaSender
                 })
                 .ConfigureServices((context, services) =>
                 {
+                    var logger = new LoggerConfiguration()
+                    .ReadFrom.Configuration(context.Configuration)
+                    .CreateLogger();
+
+                    services.AddLogging(l => l.AddSerilog(logger));
                     services.AddDbPsql(context.Configuration);
                     services.AddProducer(context.Configuration);
                     services.AddSingleton<PublishWorker>();
