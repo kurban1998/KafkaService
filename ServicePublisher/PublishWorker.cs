@@ -34,7 +34,7 @@ namespace ServicePublisher
                 {
                     try
                     {
-                        await _producer.ProduceAsync(KafkaTopicNames.TopicName, CreateMessage(account), cancellationToken).ConfigureAwait(false);
+                        await _producer.ProduceAsync(KafkaSettings.TopicName, CreateMessage(account), cancellationToken).ConfigureAwait(false);
                     }
                     catch
                     {
