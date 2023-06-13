@@ -8,23 +8,22 @@ namespace ServicePublisher.Registars
     {
         public static void AddProducer(this IServiceCollection services, IConfiguration configuration)
         {
-            var server = configuration.GetSection("KafkaServer").Value;
-
-            var producerConfig = new ProducerConfig
+            services.AddSingleton(s =>
             {
-                BootstrapServers = server,
-                ClientId = Guid.NewGuid().ToString()
-            };
+                var server = configuration.GetSection("KafkaServer").Value;
 
-            var producerBuilder = new ProducerBuilder<string, string>(producerConfig)
-            .SetErrorHandler((producer, er) =>
-            {
-                Console.WriteLine($"Failed producer {producer.Name}: Error: {er.Reason}");
+                var producerConfig = new ProducerConfig
+                {
+                    BootstrapServers = server,
+                    ClientId = Guid.NewGuid().ToString()
+                };
+
+                return new ProducerBuilder<string, string>(producerConfig)
+               .SetErrorHandler((producer, er) =>
+               {
+                   Console.WriteLine($"Failed producer {producer.Name}: Error: {er.Reason}");
+               }).Build();
             });
-
-            var producer = producerBuilder.Build();
-
-            services.AddSingleton(producer);
         }
     }
 }
